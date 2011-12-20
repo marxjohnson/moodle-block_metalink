@@ -18,8 +18,7 @@
 /**
  * Defines the form to be displayed in the metalink block
  *
- * @package    package
- * @subpackage  subpackage
+ * @package    block_metalink
  * @author      Mark Johnson <mark.johnson@tauntons.ac.uk>
  * @copyright   2010 Tauntons College, UK
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -49,11 +48,19 @@ class block_metalink_form extends moodleform {
     /**
      * Defines the form.  Just adds a filepicker and submit button
      */
-    function definition() {
+    public function definition() {
         $mform = $this->_form;
-        $mform->addElement('filepicker', 'metalink_csvfile', get_string('csvfile', 'block_metalink'), null, array('accepted_types' => 'csv,txt'));
+        $mform->addElement('filepicker',
+                           'metalink_csvfile',
+                           get_string('csvfile', 'block_metalink'),
+                           null,
+                           array('accepted_types' => 'csv,txt'));
         $mform->addHelpButton('metalink_csvfile', 'csv', 'block_metalink');
-        $mform->addRule('metalink_csvfile', get_string('musthavefile', 'block_metalink'), 'required', '', 'client');
+        $mform->addRule('metalink_csvfile',
+                        get_string('musthavefile', 'block_metalink'),
+                        'required',
+                        '',
+                        'client');
         $mform->addElement('submit', 'metalink_submit', get_string('upload'));
     }
 
@@ -62,7 +69,7 @@ class block_metalink_form extends moodleform {
      *
      * @return string
      */
-    function display() {
+    public function display() {
         //finalize the form definition if not yet done
         if (!$this->_definition_finalized) {
             $this->_definition_finalized = true;
@@ -74,4 +81,3 @@ class block_metalink_form extends moodleform {
         return $form;
     }
 }
-?>

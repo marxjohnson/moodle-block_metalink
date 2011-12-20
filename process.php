@@ -18,8 +18,7 @@
 /**
  * Handles submission of the metalink block's form and processes the file
  *
- * @package    blocks
- * @subpackage  metalink
+ * @package    block_metalink
  * @author      Mark Johnson <mark.johnson@tauntons.ac.uk>
  * @copyright   2010 Tauntons College, UK
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -78,5 +77,3 @@ try {
         print_error($e->errorcode, $e->module, '', $e->a);
     }
 }
-
-?>

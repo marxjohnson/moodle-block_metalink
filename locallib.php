@@ -18,8 +18,7 @@
 /**
  * Defines classes for use in the metalink block
  *
- * @package    blocks
- * @subpackage  metalink
+ * @package    block_metalink
  * @author      Mark Johnson <mark.johnson@tauntons.ac.uk>
  * @copyright   2010 Tauntons College, UK
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -44,7 +43,7 @@ class block_metalink_handler {
      *
      * @param string $filename
      */
-    function __construct($filename) {
+    public function __construct($filename) {
         $this->filename = $filename;
     }
 
@@ -59,7 +58,7 @@ class block_metalink_handler {
      * @global object $USER
      * @return object File handler
      */
-    function open_file() {
+    public function open_file() {
         global $USER;
         if (is_file($this->filename)) {
             if (!$file = fopen($this->filename, 'r')) {
@@ -68,7 +67,13 @@ class block_metalink_handler {
         } else {
             $fs = get_file_storage();
             $context = get_context_instance(CONTEXT_USER, $USER->id);
-            if (!$files = $fs->get_area_files($context->id, 'user', 'draft', $this->filename, 'id DESC', false)) {
+            $files = $fs->get_area_files($context->id,
+                                         'user',
+                                         'draft',
+                                         $this->filename,
+                                         'id DESC',
+                                         false);
+            if (!$files) {
                 throw new metalink_exception('cantreadcsv', '', 500);
             }
             $file = reset($files);
@@ -88,7 +93,7 @@ class block_metalink_handler {
      * @throws metalink_exeption if there are the wrong number of columns
      * @return true on success
      */
-    function validate() {
+    public function validate() {
         $line = 0;
         $file = $this->open_file();
         while ($csvrow = fgetcsv($file)) {
@@ -119,7 +124,7 @@ class block_metalink_handler {
      * @param bool $plaintext Return report as plain text, rather than HTML?
      * @return string A report of successes and failures.S
      */
-    function process($plaintext = false) {
+    public function process($plaintext = false) {
         global $DB;
         // Get the block's configuration, so we know the ID of the role we're assigning
         $cfg_metalink = get_config('block/metalink');
@@ -148,7 +153,7 @@ class block_metalink_handler {
             $strings->line = $line;
             $strings->op = $op;
 
-            // Need to check the line is valid. If not, add a message to the 
+            // Need to check the line is valid. If not, add a message to the
             // report and skip the line.
 
             // Check we've got a valid operation
@@ -163,7 +168,7 @@ class block_metalink_handler {
             }
             // Check the user we're assigning to exists
             if (!$child = $DB->get_record('course', array('idnumber' => $child_idnum))) {
-                $report[] = get_string('childnotfound','block_metalink', $strings);
+                $report[] = get_string('childnotfound', 'block_metalink', $strings);
                 continue;
             }
 
@@ -175,25 +180,39 @@ class block_metalink_handler {
             if ($op == 'del') {
                 // If we're deleting, check the parent is already linked to the
                 // child, and remove the link.  Skip the line if they're not.
-
-                if ($instance = $DB->get_record('enrol', array('courseid' => $parent->id, 'customint1' => $child->id, 'enrol' => 'meta'))) {
+                $instanceparams = array(
+                    'courseid' => $parent->id,
+                    'customint1' => $child->id,
+                    'enrol' => 'meta'
+                );
+                if ($instance = $DB->get_record('enrol', $instanceparams)) {
                     $enrol->delete_instance($instance);
-                    $report[] =  get_string('reldeleted','block_metalink', $strings);
+                    $report[] =  get_string('reldeleted', 'block_metalink', $strings);
                 } else {
                     $report[] =  get_string('reldoesntexist', 'block_metalink', $strings);
                 }
             } else {
                 // If we're adding, check that the parent is not already linked
                 // to the child, and add them. Skip the line if they are.
-                if ($instance = $DB->get_record('enrol', array('courseid' => $child->id, 'customint1' => $parent->id, 'enrol' => 'meta'))) {
+                $instanceparams1 = array(
+                    'courseid' => $child->id,
+                    'customint1' => $parent->id,
+                    'enrol' => 'meta'
+                );
+                $instanceparams2 = array(
+                    'courseid' => $parent->id,
+                    'customint1' => $child->id,
+                    'enrol' => 'meta'
+                );
+                if ($instance = $DB->get_record('enrol', $instanceparams1)) {
                     $report[] = get_string('childisparent', 'block_metalink', $strings);
-                } else if ($instance = $DB->get_record('enrol', array('courseid' => $parent->id, 'customint1' => $child->id, 'enrol' => 'meta'))) {
-                    $report[] = get_string('relalreadyexists','block_metalink', $strings);
+                } else if ($instance = $DB->get_record('enrol', $instanceparams2)) {
+                    $report[] = get_string('relalreadyexists', 'block_metalink', $strings);
                 } else if ($enrol->add_instance($parent, array('customint1' => $child->id))) {
                     enrol_meta_sync($parent->id);
-                    $report[] = get_string('reladded','block_metalink', $strings);
+                    $report[] = get_string('reladded', 'block_metalink', $strings);
                 } else {
-                    $report[] = get_string('reladderror','block_metalink', $strings);
+                    $report[] = get_string('reladderror', 'block_metalink', $strings);
                 }
             }
         }

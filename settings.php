@@ -18,8 +18,7 @@
 /**
  * Defines admin settings for the metalink block
  *
- * @package    blocks
- * @subpackage  metalink
+ * @package    block_metalink
  * @author      Mark Johnson <mark.johnson@tauntons.ac.uk>
  * @copyright   2010 Tauntons College, UK
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -30,17 +29,34 @@ if ($ADMIN->fulltree) {
 
     $configs = array();
     // Full path of the file on the server to be processed by the cron job.
-    $configs[] = new admin_setting_configtext('cronfile', get_string('cronfile', 'block_metalink'),get_string('cronfiledesc', 'block_metalink'), NULL, PARAM_TEXT);
+    $configs[] = new admin_setting_configtext('cronfile',
+                                              get_string('cronfile', 'block_metalink'),
+                                              get_string('cronfiledesc', 'block_metalink'),
+                                              null,
+                                              PARAM_TEXT);
     // Checkbox - keep old cron files?
-    $configs[] = new admin_setting_configcheckbox('keepprocessed', get_string('keepprocessed', 'block_metalink'), get_string('keepprocessedlong', 'block_metalink'), 0, 1, 0);
+    $configs[] = new admin_setting_configcheckbox('keepprocessed',
+                                                  get_string('keepprocessed', 'block_metalink'),
+                                                  get_string('keepprocessedlong', 'block_metalink'),
+                                                  0,
+                                                  1,
+                                                  0);
     // Path of the folder to keep old cron files in (if above is checked)
-    $configs[] = new admin_setting_configtext('cronprocessed', get_string('cronprocessed', 'block_metalink'), '', null, PARAM_TEXT);
+    $configs[] = new admin_setting_configtext('cronprocessed',
+                                              get_string('cronprocessed', 'block_metalink'),
+                                              '',
+                                              null,
+                                              PARAM_TEXT);
     // How many days to keep old cron files for (if above is checked)
-    $configs[] = new admin_setting_configtext('keepprocessedfor', get_string('keepprocessedfor', 'block_metalink'), '', null, PARAM_INT, 2);
+    $configs[] = new admin_setting_configtext('keepprocessedfor',
+                                              get_string('keepprocessedfor', 'block_metalink'),
+                                              '',
+                                              null,
+                                              PARAM_INT,
+                                              2);
 
     foreach ($configs as $config) {
         $config->plugin = 'block/metalink';
         $settings->add($config);
     }
 }
-?>

@@ -18,8 +18,7 @@
 /**
  * Define the metalink block's class
  *
- * @package    blocks
- * @subpackage  metalink
+ * @package    block_metalink
  * @author      Mark Johnson <mark.johnson@tauntons.ac.uk>
  * @copyright   2010 Tauntons College, UK
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -33,7 +32,7 @@ class block_metalink extends block_base {
     /**
      * Set the title
      */
-    function init() {
+    public function init() {
         $this->title = get_string('pluginname', 'block_metalink');
     }
 
@@ -44,8 +43,8 @@ class block_metalink extends block_base {
      *
      * @return array
      */
-    function applicable_formats() {
-        return array('site' => true,'my' => true);
+    public function applicable_formats() {
+        return array('site' => true, 'my' => true);
     }
 
     /**
@@ -59,43 +58,44 @@ class block_metalink extends block_base {
      * @global object $USER Current user record
      * @return object Block contents and footer
      */
-    function get_content () {
+    public function get_content () {
         if ($this->content !== null) {
             return $this->content;
         }
-        
+
         $this->content->footer='';
         $this->content->text='';
         global $CFG;
         global $USER;
         $context = get_context_instance(CONTEXT_SYSTEM);
-       //only let people with permission use the block- everyone else will get an empty string
-       if (has_capability('block/metalink:use', $context)) {
+        //only let people with permission use the block- everyone else will get an empty string
+        if (has_capability('block/metalink:use', $context)) {
             //check that there is a tutor role configure
             if (!enrol_is_enabled('meta')) {
                 $url = new moodle_url('/admin/settings.php', array('section' => 'manageenrols'));
                 $this->content->text .= get_string('metadisabled', 'block_metalink').' ';
-                $this->content->text .= html_writer::tag('a', get_string('manageenrols', 'enrol'), array('href' => $url->out(false)));
-            } else {          
+                $strmanage = get_string('manageenrols', 'enrol');
+                $this->content->text .= html_writer::tag('a', $strmanage, array('href' => $url));
+            } else {
                 require_once($CFG->dirroot.'/blocks/metalink/block_metalink_form.php');
                 $url = new moodle_url('/blocks/metalink/process.php');
                 $mform = new block_metalink_form($url->out());
                 $form = $mform->display();
-                $this->content->text.= $form;            
+                $this->content->text.= $form;
             }
-       }
+        }
 
-       $jsmodule = array(
+        $jsmodule = array(
             'name'  =>  'block_metalink',
             'fullpath'  =>  '/blocks/metalink/module.js',
             'requires'  =>  array('base', 'node', 'io', 'overlay')
-       );
-       
-       $this->page->requires->string_for_js('upload', 'moodle');
-       $this->page->requires->string_for_js('pluginname', 'block_metalink');
-       $this->page->requires->js_init_call('M.block_metalink.init', null, false, $jsmodule);
+        );
 
-       return $this->content;
+        $this->page->requires->string_for_js('upload', 'moodle');
+        $this->page->requires->string_for_js('pluginname', 'block_metalink');
+        $this->page->requires->js_init_call('M.block_metalink.init', null, false, $jsmodule);
+
+        return $this->content;
     }
 
     /**
@@ -108,31 +108,32 @@ class block_metalink extends block_base {
      * @global object $CFG Global config object
      * @return bool
      */
-    function cron() {
+    public function cron() {
 
         global $CFG;
         require_once($CFG->dirroot.'/blocks/metalink/locallib.php');
-        
+
         $cfg_metalink = get_config('block/metalink');
 
         if (is_file($cfg_metalink->cronfile)) {
             $report = array();
             $handler = new block_metalink_handler($cfg_metalink->cronfile);
             try {
-                if(!enrol_is_enabled('meta')) {
+                if (!enrol_is_enabled('meta')) {
                     throw new metalink_exception('metadisabled');
                 }
-                $handler->validate();            
+                $handler->validate();
                 //process file
                 $report = explode("\n", $handler->process(true));
+                $procdir = $cfg_metalink->cronprocessed;
 
                 if ($cfg_metalink->keepprocessed) {
-                    if (is_dir($cfg_metalink->cronprocessed) && is_writable($cfg_metalink->cronprocessed)) {
+                    if (is_dir($procdir) && is_writable($procdir)) {
                         //move the processed file to prevent wasted time re-processing
                         $date = date('Ymd');
                         $filenames = new stdClass;
                         $filenames->old = $cfg_metalink->cronfile;
-                        $filenames->new = $cfg_metalink->cronprocessed.'/'.basename($cfg_metalink->cronfile).'.'.$date;
+                        $filenames->new = $procdir.'/'.basename($cfg_metalink->cronfile).'.'.$date;
 
                         if (rename($filenames->old, $filenames->new)) {
                             $report[] = get_string('cronmoved', 'block_metalink', $filenames);
@@ -140,7 +141,7 @@ class block_metalink extends block_base {
                             $report[] = get_string('cronnotmoved', 'block_metalink', $filenames);
                         }
                     } else {
-                        $report[] = get_string('nodir', 'block_metalink', $cfg_metalink->cronprocessed);
+                        $report[] = get_string('nodir', 'block_metalink', $procdir);
                     }
                 } else {
                     unlink($cfg_metalink->cronfile);
@@ -148,17 +149,21 @@ class block_metalink extends block_base {
 
                 if ($cfg_metalink->keepprocessedfor > 0) {
                     $removed = 0;
-                    $processed = scandir($cfg_metalink->cronprocessed);
+                    $processed = scandir($procdir);
                     foreach ($processed as $processed) {
-                        if (is_file($cfg_metalink->cronprocessed.'/'.$processed)) {
-                            $path_parts = pathinfo($cfg_metalink->cronprocessed.'/'.$processed);
+                        if (is_file($procdir.'/'.$processed)) {
+                            $path_parts = pathinfo($procdir.'/'.$processed);
                             $ext = $path_parts['extension'];
                             $threshold = date('Ymd', time()-($cfg_metalink->keepprocessedfor*86400));
-                            if ($path_parts['filename'] == basename($cfg_metalink->cronfile) && $ext < $threshold) {
-                                if (unlink($cfg_metalink->cronprocessed.'/'.$processed)) {
+                            $iscronfile = $path_parts['filename'] == basename($cfg_metalink->cronfile);
+                            if ($iscronfile && $ext < $threshold) {
+                                if (unlink($procdir.'/'.$processed)) {
                                     $removed++;
                                 } else {
-                                    $report[] = get_string('cantremoveold', 'block_metalink', $cfg_metalink->cronprocessed.'/'.$processed);
+                                    $path = $procdir.'/'.$processed;
+                                    $report[] = get_string('cantremoveold',
+                                                           'block_metalink',
+                                                           $path);
                                 }
                             }
                         }
@@ -174,17 +179,19 @@ class block_metalink extends block_base {
                 $email = $message;
                 $report[] = $message;
             }
-            email_to_user(get_admin(), get_admin(), get_string('metalink_log','block_metalink'), $email);
-            foreach($report as $line) {
+            email_to_user(get_admin(),
+                          get_admin(),
+                          get_string('metalink_log', 'block_metalink'),
+                          $email);
+            foreach ($report as $line) {
                 mtrace($line);
             }
         } else {
             mtrace(get_string('nocronfile', 'block_metalink'));
         }
         return true;
-        
+
     }
 
 
-}    
-?>
+}
