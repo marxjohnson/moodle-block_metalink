@@ -18,13 +18,15 @@
 /**
  * Set the version number and cron interval for metalink
  *
- * @package    blocks
- * @subpackage  metalink
+ * @package    block_metalink
  * @author      Mark Johnson <mark.johnson@tauntons.ac.uk>
  * @copyright   2010 Tauntons College, UK
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-        $plugin->version = 2010121500;
-        $plugin->cron = 300;
-?>
+$plugin->version = 2010121500;
+$plugin->cron = 300;
+$plugin->requires = 2010112400;
+$plugin->component = 'block_metalink';
+$plugin->maturity = MATURITY_STABLE;
+$plugin->release = '2.0 (Build: 2010120500)';
