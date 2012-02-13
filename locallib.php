@@ -147,8 +147,8 @@ class block_metalink_handler {
             $line++;
             // Clean idnumbers to prevent sql injection
             $op = clean_param($csvrow[0], PARAM_ALPHANUM);
-            $parent_idnum = clean_param($csvrow[1], PARAM_ALPHANUM);
-            $child_idnum = clean_param($csvrow[2], PARAM_ALPHANUM);
+            $parent_idnum = clean_param($csvrow[1], PARAM_TEXT);
+            $child_idnum = clean_param($csvrow[2], PARAM_TEXT);
             $strings = new stdClass;
             $strings->line = $line;
             $strings->op = $op;
