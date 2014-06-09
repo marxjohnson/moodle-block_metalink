@@ -59,30 +59,33 @@ class block_metalink extends block_base {
      * @return object Block contents and footer
      */
     public function get_content () {
-        if ($this->content !== null) {
+
+        $coursecontext = context::instance_by_id($this->instance->parentcontextid);
+
+        // Only let people with permission use the block - everyone else will get an empty string.
+        if (!has_capability('block/metalink:use', $coursecontext)
+                or $this->content !== null) {
             return $this->content;
         }
 
+        $this->content = new stdClass();
         $this->content->footer='';
         $this->content->text='';
         global $CFG;
         global $USER;
-        $context = get_context_instance(CONTEXT_SYSTEM);
-        //only let people with permission use the block- everyone else will get an empty string
-        if (has_capability('block/metalink:use', $context)) {
-            //check that there is a tutor role configure
-            if (!enrol_is_enabled('meta')) {
-                $url = new moodle_url('/admin/settings.php', array('section' => 'manageenrols'));
-                $this->content->text .= get_string('metadisabled', 'block_metalink').' ';
-                $strmanage = get_string('manageenrols', 'enrol');
-                $this->content->text .= html_writer::tag('a', $strmanage, array('href' => $url));
-            } else {
-                require_once($CFG->dirroot.'/blocks/metalink/block_metalink_form.php');
-                $url = new moodle_url('/blocks/metalink/process.php');
-                $mform = new block_metalink_form($url->out());
-                $form = $mform->display();
-                $this->content->text.= $form;
-            }
+
+        // Check that there is a tutor role configure.
+        if (!enrol_is_enabled('meta')) {
+            $url = new moodle_url('/admin/settings.php', array('section' => 'manageenrols'));
+            $this->content->text .= get_string('metadisabled', 'block_metalink').' ';
+            $strmanage = get_string('manageenrols', 'enrol');
+            $this->content->text .= html_writer::tag('a', $strmanage, array('href' => $url));
+        } else {
+            require_once($CFG->dirroot.'/blocks/metalink/block_metalink_form.php');
+            $url = new moodle_url('/blocks/metalink/process.php');
+            $mform = new block_metalink_form($url->out());
+            $form = $mform->display();
+            $this->content->text.= $form;
         }
 
         $jsmodule = array(
@@ -123,13 +126,13 @@ class block_metalink extends block_base {
                     throw new metalink_exception('metadisabled');
                 }
                 $handler->validate();
-                //process file
+                // Process file.
                 $report = explode("\n", $handler->process(true));
                 $procdir = $cfg_metalink->cronprocessed;
 
                 if ($cfg_metalink->keepprocessed) {
                     if (is_dir($procdir) && is_writable($procdir)) {
-                        //move the processed file to prevent wasted time re-processing
+                        // Move the processed file to prevent wasted time re-processing.
                         $date = date('Ymd');
                         $filenames = new stdClass;
                         $filenames->old = $cfg_metalink->cronfile;
@@ -172,7 +175,7 @@ class block_metalink extends block_base {
                         $report[] = get_string('removedold', 'block_metalink', $removed);
                     }
                 }
-                //email outcome to admin
+                // Email outcome to admin.
                 $email = implode("\n", $report);
             } catch (metalink_exception $e) {
                 $message = get_string($e->errorcode, $e->module, $e->a);

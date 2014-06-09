@@ -41,13 +41,13 @@ if ($ADMIN->fulltree) {
                                                   0,
                                                   1,
                                                   0);
-    // Path of the folder to keep old cron files in (if above is checked)
+    // Path of the folder to keep old cron files in (if above is checked).
     $configs[] = new admin_setting_configtext('cronprocessed',
                                               get_string('cronprocessed', 'block_metalink'),
                                               '',
                                               null,
                                               PARAM_TEXT);
-    // How many days to keep old cron files for (if above is checked)
+    // How many days to keep old cron files for (if above is checked).
     $configs[] = new admin_setting_configtext('keepprocessedfor',
                                               get_string('keepprocessedfor', 'block_metalink'),
                                               '',
