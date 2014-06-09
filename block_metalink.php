@@ -60,11 +60,7 @@ class block_metalink extends block_base {
      */
     public function get_content () {
 
-        $coursecontext = context::instance_by_id($this->instance->parentcontextid);
-
-        // Only let people with permission use the block - everyone else will get an empty string.
-        if (!has_capability('block/metalink:use', $coursecontext)
-                or $this->content !== null) {
+        if ($this->content !== null) {
             return $this->content;
         }
 
@@ -73,19 +69,23 @@ class block_metalink extends block_base {
         $this->content->text='';
         global $CFG;
         global $USER;
+        $coursecontext = context_system::instance();
 
-        // Check that there is a tutor role configure.
-        if (!enrol_is_enabled('meta')) {
-            $url = new moodle_url('/admin/settings.php', array('section' => 'manageenrols'));
-            $this->content->text .= get_string('metadisabled', 'block_metalink').' ';
-            $strmanage = get_string('manageenrols', 'enrol');
-            $this->content->text .= html_writer::tag('a', $strmanage, array('href' => $url));
-        } else {
-            require_once($CFG->dirroot.'/blocks/metalink/block_metalink_form.php');
-            $url = new moodle_url('/blocks/metalink/process.php');
-            $mform = new block_metalink_form($url->out());
-            $form = $mform->display();
-            $this->content->text.= $form;
+        // Only let people with permission use the block - everyone else will get an empty string.
+        if (!has_capability('block/metalink:use', $coursecontext)
+            // Check that there is a tutor role configure.
+            if (!enrol_is_enabled('meta')) {
+                $url = new moodle_url('/admin/settings.php', array('section' => 'manageenrols'));
+                $this->content->text .= get_string('metadisabled', 'block_metalink').' ';
+                $strmanage = get_string('manageenrols', 'enrol');
+                $this->content->text .= html_writer::tag('a', $strmanage, array('href' => $url));
+            } else {
+                require_once($CFG->dirroot.'/blocks/metalink/block_metalink_form.php');
+                $url = new moodle_url('/blocks/metalink/process.php');
+                $mform = new block_metalink_form($url->out());
+                $form = $mform->display();
+                $this->content->text.= $form;
+            }
         }
 
         $jsmodule = array(
