@@ -66,7 +66,7 @@ class block_metalink_handler {
             }
         } else {
             $fs = get_file_storage();
-            $context = get_context_instance(CONTEXT_USER, $USER->id);
+            $context = context_user::instance($USER->id);
             $files = $fs->get_area_files($context->id,
                                          'user',
                                          'draft',
@@ -126,26 +126,26 @@ class block_metalink_handler {
      */
     public function process($plaintext = false) {
         global $DB;
-        // Get the block's configuration, so we know the ID of the role we're assigning
+        // Get the block's configuration, so we know the ID of the role we're assigning.
         $cfg_metalink = get_config('block/metalink');
         $report = array();
-        // Set the newline character
+        // Set the newline character.
         if ($plaintext) {
             $nl = "\n";
         } else {
             $nl = '<br />';
         }
 
-        // Set a counter so we can report line numbers for errors
+        // Set a counter so we can report line numbers for errors.
         $line = 0;
 
-        // Open the file
+        // Open the file.
         $file = $this->open_file();
 
-        // Loop through each row of the file
+        // Loop through each row of the file.
         while ($csvrow = fgetcsv($file)) {
             $line++;
-            // Clean idnumbers to prevent sql injection
+            // Clean idnumbers to prevent sql injection.
             $op = clean_param($csvrow[0], PARAM_ALPHANUM);
             $parent_idnum = clean_param($csvrow[1], PARAM_TEXT);
             $child_idnum = clean_param($csvrow[2], PARAM_TEXT);
@@ -156,17 +156,17 @@ class block_metalink_handler {
             // Need to check the line is valid. If not, add a message to the
             // report and skip the line.
 
-            // Check we've got a valid operation
+            // Check we've got a valid operation.
             if (!in_array($op, array('add', 'del'))) {
                 $report[] = get_string('invalidop', 'block_metalink', $strings);
                 continue;
             }
-            // Check the user we're assigning exists
+            // Check the user we're assigning exists.
             if (!$parent = $DB->get_record('course', array('idnumber' => $parent_idnum))) {
                 $report[] = get_string('parentnotfound', 'block_metalink', $strings);
                 continue;
             }
-            // Check the user we're assigning to exists
+            // Check the user we're assigning to exists.
             if (!$child = $DB->get_record('course', array('idnumber' => $child_idnum))) {
                 $report[] = get_string('childnotfound', 'block_metalink', $strings);
                 continue;

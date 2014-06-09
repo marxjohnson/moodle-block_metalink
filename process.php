@@ -24,17 +24,17 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-//get DB credentials from config.php
+// Get DB credentials from config.php.
 require_once('../../config.php');
 require_once($CFG->dirroot.'/blocks/metalink/locallib.php');
 require_once($CFG->dirroot.'/blocks/metalink/block_metalink_form.php');
 
-// Find out if this is an asynchronous request
+// Find out if this is an asynchronous request.
 $ajax = $_SERVER['HTTP_X_REQUESTED_WITH'];
 
 $url = '/blocks/metalink/process.php';
 $PAGE->set_url($url);
-$PAGE->set_context(get_context_instance(CONTEXT_SYSTEM));
+$PAGE->set_context(context_system::instance());
 $PAGE->navbar->add(get_string('pluginname', 'block_metalink'));
 require_login();
 require_sesskey();
@@ -43,12 +43,12 @@ $mform = new block_metalink_form();
 
 try {
     if ($data = $mform->get_data()) {
-        // Check the user is allowed to use the block
+        // Check the user is allowed to use the block.
         if (!has_capability('block/metalink:use', $PAGE->context)) {
             throw new metalink_exception('nopermission', '', 401);
         }
 
-        // Validate and process the file
+        // Validate and process the file.
         $handler = new block_metalink_handler($data->metalink_csvfile);
         $handler->validate();
         $report = $handler->process();
