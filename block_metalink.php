@@ -72,7 +72,7 @@ class block_metalink extends block_base {
         $coursecontext = context_system::instance();
 
         // Only let people with permission use the block - everyone else will get an empty string.
-        if (!has_capability('block/metalink:use', $coursecontext)
+        if (!has_capability('block/metalink:use', $coursecontext) {
             // Check that there is a tutor role configure.
             if (!enrol_is_enabled('meta')) {
                 $url = new moodle_url('/admin/settings.php', array('section' => 'manageenrols'));
