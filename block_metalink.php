@@ -101,6 +101,8 @@ class block_metalink extends block_base {
         return $this->content;
     }
 
+    function has_config() {return true;}
+
     /**
      * Cron Function - checks for existence of cron file, and processes
      *
@@ -116,7 +118,7 @@ class block_metalink extends block_base {
         global $CFG;
         require_once($CFG->dirroot.'/blocks/metalink/locallib.php');
 
-        $cfg_metalink = get_config('block/metalink');
+        $cfg_metalink = get_config('block_metalink');
 
         if (is_file($cfg_metalink->cronfile)) {
             $report = array();
