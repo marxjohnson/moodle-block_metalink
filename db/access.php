@@ -51,7 +51,7 @@ $capabilities = array(
     'block/metalink:use' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
-        'legacy' => array(
+        'archetypes' => array(
             'manager' => CAP_ALLOW
         )
     )

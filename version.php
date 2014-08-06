@@ -24,9 +24,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$plugin->version = 2014062716;
+$plugin->version = 2014080615;
 $plugin->cron = 300;
 $plugin->requires = 2013111800;
 $plugin->component = 'block_metalink';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '2.1.1 (Build: 2014062716)';
+$plugin->release = '2.1.2 (Build: 2014080615)';

@@ -1,4 +1,4 @@
-@block @uon @block_metalink
+@block @uon @block_metalink @javascript
 Feature: Linking metacourses and child courses by uploading a CSV file.
     In order to make it easier to import users from one course to another
     As a editing teacher
@@ -25,8 +25,8 @@ Feature: Linking metacourses and child courses by uploading a CSV file.
         And I click on "Enable" "link" in the "Course meta link" "table_row"
         And I log out 
    
-    @javascript @_file_upload
-    Scenario: Teachers can add the metalink block
+    @_file_upload
+    Scenario: Manager can add the metalink block
         When I log in as "admin"
         And I follow "My home"
         And I click on "Customise this page" "button"
@@ -39,3 +39,22 @@ Feature: Linking metacourses and child courses by uploading a CSV file.
         And I follow "Enrolled users"
         Then I should see "student1"
         And I should see "teacher1"
+
+    Scenario: Manager should be displayed a message if meta enrolment is not activated
+        Given I log in as "admin"
+        And I expand "Site administration" node
+        And I expand "Plugins" node
+        And I expand "Enrolments" node
+        And I follow "Manage enrol plugins"
+        And I click on "Disable" "link" in the "Course meta link" "table_row"
+        And I follow "My home"
+        And I click on "Customise this page" "button"
+        And I add the "Upload Metacourse links" block
+        Then I should see "The Metacourse enrolment plugin is disabled"
+
+    Scenario: Non-Manager can not use the metalink block
+        When I log in as "student1"
+        And I follow "My home"
+        And I click on "Customise this page" "button"
+        And I add the "Upload Metacourse links" block
+        Then I should not see "Select CSV file"
