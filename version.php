@@ -29,4 +29,4 @@ $plugin->cron = 300;
 $plugin->requires = 2013111800;
 $plugin->component = 'block_metalink';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '2.1.2 (Build: 2014080616)';
+$plugin->release = '2.1.2 (Build: 2014080617)';
