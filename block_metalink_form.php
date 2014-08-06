@@ -41,24 +41,20 @@ class block_metalink_form extends moodleform {
     public function definition() {
         $mform = $this->_form;
 
-        $context = context_system::instance();
-        // Only let people with permission use the block - everyone else will get an empty string.
-        if (has_capability('block/metalink:use', $context)) {
-            $mform->addElement('filemanager',
-                               'metalink_csvfile',
-                               get_string('csvfile', 'block_metalink'),
-                               null,
-                               array('accepted_types' => 'csv,txt',
-                                   'subdirs' => 0,
-                                   'maxfiles' => 1));
-            $mform->addHelpButton('metalink_csvfile', 'csv', 'block_metalink');
-            $mform->addRule('metalink_csvfile',
-                            get_string('musthavefile', 'block_metalink'),
-                            'required',
-                            '',
-                            'client');
-            $mform->addElement('submit', 'metalink_submit', get_string('upload'));
-        }
+        $mform->addElement('filemanager',
+                           'metalink_csvfile',
+                           get_string('csvfile', 'block_metalink'),
+                           null,
+                           array('accepted_types' => 'csv,txt',
+                               'subdirs' => 0,
+                               'maxfiles' => 1));
+        $mform->addHelpButton('metalink_csvfile', 'csv', 'block_metalink');
+        $mform->addRule('metalink_csvfile',
+                        get_string('musthavefile', 'block_metalink'),
+                        'required',
+                        '',
+                        'client');
+        $mform->addElement('submit', 'metalink_submit', get_string('upload'));
     }
 
     /**

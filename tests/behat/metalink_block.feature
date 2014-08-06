@@ -51,10 +51,3 @@ Feature: Linking metacourses and child courses by uploading a CSV file.
         And I click on "Customise this page" "button"
         And I add the "Upload Metacourse links" block
         Then I should see "The Metacourse enrolment plugin is disabled"
-
-    Scenario: Non-Manager can not use the metalink block
-        When I log in as "student1"
-        And I follow "My home"
-        And I click on "Customise this page" "button"
-        And I add the "Upload Metacourse links" block
-        Then I should not see "Select CSV file"
