@@ -56,7 +56,7 @@ if ($ADMIN->fulltree) {
                                               2);
 
     foreach ($configs as $config) {
-        $config->plugin = 'block/metalink';
+        $config->plugin = 'block_metalink';
         $settings->add($config);
     }
 }

@@ -30,7 +30,7 @@ $capabilities = array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
-            'user' => CAP_ALLOW
+            'manager' => CAP_ALLOW
         ),
 
         'clonepermissionsfrom' => 'moodle/my:manageblocks'
@@ -51,7 +51,7 @@ $capabilities = array(
     'block/metalink:use' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
-        'legacy' => array(
+        'archetypes' => array(
             'manager' => CAP_ALLOW
         )
     )

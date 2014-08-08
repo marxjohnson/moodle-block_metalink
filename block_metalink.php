@@ -55,7 +55,6 @@ class block_metalink extends block_base {
      * settings page. Also initaliases Javascript for asynchronous processing.
      *
      * @global object $CFG Global config object
-     * @global object $USER Current user record
      * @return object Block contents and footer
      */
     public function get_content () {
@@ -68,7 +67,6 @@ class block_metalink extends block_base {
         $this->content->footer='';
         $this->content->text='';
         global $CFG;
-        global $USER;
         $context = context_system::instance();
 
         // Only let people with permission use the block - everyone else will get an empty string.
@@ -101,6 +99,8 @@ class block_metalink extends block_base {
         return $this->content;
     }
 
+    function has_config() {return true;}
+
     /**
      * Cron Function - checks for existence of cron file, and processes
      *
@@ -116,7 +116,7 @@ class block_metalink extends block_base {
         global $CFG;
         require_once($CFG->dirroot.'/blocks/metalink/locallib.php');
 
-        $cfg_metalink = get_config('block/metalink');
+        $cfg_metalink = get_config('block_metalink');
 
         if (is_file($cfg_metalink->cronfile)) {
             $report = array();

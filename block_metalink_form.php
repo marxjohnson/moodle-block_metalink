@@ -40,11 +40,14 @@ class block_metalink_form extends moodleform {
      */
     public function definition() {
         $mform = $this->_form;
-        $mform->addElement('filepicker',
+
+        $mform->addElement('filemanager',
                            'metalink_csvfile',
                            get_string('csvfile', 'block_metalink'),
                            null,
-                           array('accepted_types' => 'csv,txt'));
+                           array('accepted_types' => 'csv,txt',
+                               'subdirs' => 0,
+                               'maxfiles' => 1));
         $mform->addHelpButton('metalink_csvfile', 'csv', 'block_metalink');
         $mform->addRule('metalink_csvfile',
                         get_string('musthavefile', 'block_metalink'),
