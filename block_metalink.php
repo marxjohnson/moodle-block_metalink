@@ -84,17 +84,17 @@ class block_metalink extends block_base {
                 $form = $mform->display();
                 $this->content->text.= $form;
             }
+
+            $jsmodule = array(
+                'name'  =>  'block_metalink',
+                'fullpath'  =>  '/blocks/metalink/module.js',
+                'requires'  =>  array('base', 'node', 'io', 'overlay')
+            );
+
+            $this->page->requires->string_for_js('upload', 'moodle');
+            $this->page->requires->string_for_js('pluginname', 'block_metalink');
+            $this->page->requires->js_init_call('M.block_metalink.init', null, false, $jsmodule);
         }
-
-        $jsmodule = array(
-            'name'  =>  'block_metalink',
-            'fullpath'  =>  '/blocks/metalink/module.js',
-            'requires'  =>  array('base', 'node', 'io', 'overlay')
-        );
-
-        $this->page->requires->string_for_js('upload', 'moodle');
-        $this->page->requires->string_for_js('pluginname', 'block_metalink');
-        $this->page->requires->js_init_call('M.block_metalink.init', null, false, $jsmodule);
 
         return $this->content;
     }
